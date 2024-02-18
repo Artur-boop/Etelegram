@@ -182,7 +182,9 @@ def diary_sender2(message):
             message_txt +=  'Завтра' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ')'  + ' буде такий розклад: '
             message_txt += '\n' + stickers_data[int(week)][int(day) + 1]
     response = message_txt + '\n\n' + '\N{watch}'
-    bot.send_message(message.chat.id, response)
+
+    output_pin = bot.send_message(message.chat.id, response)
+    bot.pin_chat_message(chat_id=message.chat.id, message_id=output_pin.message_id)
 
 
 # 8.50 - 9.35, 9.35-9.40, 9.40-10.25, 10.25-10.35
