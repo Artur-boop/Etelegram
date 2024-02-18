@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 from datetime import datetime
 from datetime import datetime, timedelta
-
+import locale
 
 bot = telebot.TeleBot('6487252741:AAFOYo2PBeFXoBNOP2aNfQD7aT03C0mVBSk')
 
@@ -21,7 +21,7 @@ stickers_data = {
     },
     2: {
         1:  f"8:50 - Укр мова\n10:35 - Алгебра \n12:30 - Інфа \n14:15 - Англ мова ",
-        2: f"8:50 - Зарубіжна\n 10:35 - Фізика \n12:30 - Геометрія\n14:15 - ШПД Укр мова",
+        2: f"8:50 - Зарубіжна\n 10:35 - Фізика \n12:30 - Геометрія\n14:15 - ШПД Фізика",
         3: f"8:50 - Геометрія \n10:35 - Географія \n12:30 - Англ мова \n14:15 - Фізра",
         4: f"8:50 - Захист \n 10:35 - Біологія \n12:30 - Хімія \n14:15 - Історія укр ",
         5: f"8:50 - Укр літ\n 10:35 - Алгебра \n12:30 - Англ \n14:15 - ШПД Математика"
@@ -30,7 +30,7 @@ stickers_data = {
         1: f"8:50 - Укр мова\n10:35 - Алгебра \n12:30 - Інформатика \n14:15 - немає",
         2: f"8:50 - Всесвітня \n10:35 - Фізика \n12:30 - Астрономія \n14:15 - Технології",
         3: f"8:50 - Геометрія \n10:35 - Англ мова \n12:30 - Алгебра \n14:15 - ШПД Фізика",
-        4: f"8:50 - Історія укр\n10:35 - Фізра \n12:30 - Хі14:15 - ШПД Укр мова ",
+        4: f"8:50 - Історія укр\n10:35 - Фізра \n12:30 - Хімія\n14:15 - ШПД Укр мова ",
         5: f"8:50 - Фізика \n10:35 - Англ \n12:30 - Алгебра \n14:15 - Укр літ "
     },
     4: {
@@ -124,6 +124,26 @@ def diary_sender1(message):
     response = message_txt + '\n\n' + '\N{watch}'
     bot.send_message(message.chat.id, response)
 
+
+# Assuming you have stickers_data and other required functions defined elsewhere in your code
+
+def convert_to_text_ukrainian(date_str,days_to_add):
+
+    # Set the locale to Ukrainian
+    locale.setlocale(locale.LC_TIME, 'uk_UA.UTF-8')
+
+    # Parse the input date string
+    date_object = datetime.strptime(date_str, '%Y-%m-%d')
+
+    # Map English month names to Ukrainian
+
+    new_date = date_object + timedelta(days=days_to_add)
+
+    # Convert the date to the desired text format in Ukrainian
+    text_date = str(new_date.strftime('%d-е  '))
+    print('check')
+    return text_date
+
 @bot.message_handler(commands=['diary_tomorrow'])
 def diary_sender2(message):
     today = date.today()
@@ -131,6 +151,7 @@ def diary_sender2(message):
     cur_date = str(today)
     message_txt = ''
     print(cur_date)
+    print(convert_to_text_ukrainian(start_date, 1))
     if cur_date == '2024-01-21':
         print('hey')
         message_txt += ('Завтра - ПОНЕДІЛОК' + '\N{skull}.' + 'Буде такий розклад:')
@@ -143,20 +164,26 @@ def diary_sender2(message):
         day = str((calc_week(num_days)))[-2]
         print('week - ', int(week))
         print('day - ', int(day))
-        if int(day) == 7:
-            message_txt += ('Завтра - ПОНЕДІЛОК' + '\N{skull}.' + 'Буде такий розклад:')
-            message_txt += '\n' +stickers_data[int(week) + 1][1]
+        if int(day) == 0:
+            print('Завтра понеділок')
+            message_txt += ('Завтра - ПОНЕДІЛОК' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ').' + '\N{skull}'+  ' Буде такий розклад:')
+            if int(week) == 4:
+                message_txt += '\n' +stickers_data[1][1]
+            else:
+
+                message_txt += '\n' +stickers_data[int(week) + 1][1]
         elif int(day) == 6:
-            message_txt += ('Броускі чіл завтра  немає пар. Завтра - НЕДІЛЯ ' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
+            message_txt += ('Броускі чіл завтра  немає пар. Завтра - НЕДІЛЯ ' + ' ( ' + convert_to_text_ukrainian(start_date, 2) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
             message_txt += '\n' + stickers_data[int(week) + 1][1]
         elif int(day) == 5:
-            message_txt += ('Броускі чіл завтра  немає пар. Завтра - Субота ' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
+            message_txt += ('Броускі чіл завтра  немає пар. Завтра - Субота ' + ' ( ' + convert_to_text_ukrainian(start_date, 3) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
             message_txt += '\n' + stickers_data[int(week) + 1][1]
         else:
-            message_txt += f" Завтра буде такий розклад: "
+            message_txt +=  'Завтра' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ')'  + ' буде такий розклад: '
             message_txt += '\n' + stickers_data[int(week)][int(day) + 1]
     response = message_txt + '\n\n' + '\N{watch}'
     bot.send_message(message.chat.id, response)
+
 
 # 8.50 - 9.35, 9.35-9.40, 9.40-10.25, 10.25-10.35
 #
@@ -253,7 +280,13 @@ def diary_sender5(message):
         print('week - ', int(week))
         print('day - ', int(day))
         if int(day) == 0:
-            message_txt += ('Наступний тиждень буде - ' + str(week) + '\N{skull}.' + 'Протягом тидня буде такий розклад:')
+            if int(week) == 4:
+                message_txt += ('Наступний тиждень буде - ' + '1' + '\N{skull}.' + 'Протягом тидня буде такий розклад:')
+                week = 0
+            else:
+
+
+                message_txt += ('Наступний тиждень буде - ' + str(week) + '\N{skull}.' + 'Протягом тижня буде такий розклад:')
             message_txt += '\n' + 'Понеділок' + '\n' +stickers_data[int(week) + 1][1] + '\n'
             message_txt += '\n' + 'Вівторок' + '\n' +stickers_data[int(week) + 1][2] + '\n'
             message_txt += '\n' + 'Середа' + '\n' +stickers_data[int(week) + 1][3] + '\n'
