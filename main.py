@@ -166,17 +166,17 @@ def diary_sender2(message):
         print('day - ', int(day))
         if int(day) == 0:
             print('Завтра понеділок')
-            message_txt += ('Завтра - ПОНЕДІЛОК' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ').' + '\N{skull}'+  ' Буде такий розклад:')
+            message_txt += ('Завтра - ПОНЕДІЛОК' + ' ( ' + convert_to_text_ukrainian(cur_date, 1) + ').' + '\N{skull}'+  ' Буде такий розклад:')
             if int(week) == 4:
                 message_txt += '\n' +stickers_data[1][1]
             else:
 
                 message_txt += '\n' +stickers_data[int(week) + 1][1]
         elif int(day) == 6:
-            message_txt += ('Броускі чіл завтра  немає пар. Завтра - НЕДІЛЯ ' + ' ( ' + convert_to_text_ukrainian(start_date, 2) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
+            message_txt += ('Броускі чіл завтра  немає пар. Завтра - НЕДІЛЯ ' + ' ( ' + convert_to_text_ukrainian(cur_date, 2) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
             message_txt += '\n' + stickers_data[int(week) + 1][1]
         elif int(day) == 5:
-            message_txt += ('Броускі чіл завтра  немає пар. Завтра - Субота ' + ' ( ' + convert_to_text_ukrainian(start_date, 3) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
+            message_txt += ('Броускі чіл завтра  немає пар. Завтра - Субота ' + ' ( ' + convert_to_text_ukrainian(cur_date, 3) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
             message_txt += '\n' + stickers_data[int(week) + 1][1]
         else:
             message_txt +=  'Завтра' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ')'  + ' буде такий розклад: '
