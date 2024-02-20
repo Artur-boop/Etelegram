@@ -61,7 +61,7 @@ time_names = ['перша пара перша півпара', 'маленька
 def start(message):
     today = date.today()
     bot.reply_to(message, ('Привіт' + ' \N{Smiling Face with Open Mouth and Smiling Eyes}.' +  ' Цей бот зручно зберігає розклади в телеграмі' + '\n' + 'Команди:\n/diary_today - Розклад сьогодні\n/diary_tomorrow - Розклад завтра\n/time - Найближча перерва або пара\n/week - Розклад на тиждень' + '\n\n' + '\N{watch}'))
-    print()
+    
 
 
 
@@ -80,18 +80,21 @@ def calc_difference(start_date, cur_date):
 def calc_week(num_days):
 
     if num_days <= 7:
-        return(1, num_days)
+        res = (1, num_days)
     else:
         weeks = num_days // 7
         days = num_days % 7
-
+        
         if days == 0 and weeks >= 1:
             if weeks <= 4:
-                return(weeks,days)
+                res = (weeks,days)
             else:
-                return (weeks % 4)
+                res = (weeks % 4)
+        
         elif days != 0 and weeks >= 1:
-            return (weeks + 1, days)
+            res = (weeks + 1, days)
+    
+    return res
 
 
 @bot.message_handler(commands=['diary_today'])
@@ -99,7 +102,7 @@ def diary_sender1(message):
     today = date.today()
     start_date = '2024-01-22'
     message_txt = ''
-    print(str(today))
+    
     if str(today)[5:7] == '01' and str(today)[8:] == '21':
         bot.reply_to(message, f"Броускі чіл сьогодні немає пар. Сьогодні - НЕДІЛЯ")
         bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAJ1mmWtD8YH3qUAAZxdAqBaj1X6Kf4SJgACCAADwDZPE29sJgveGptpNAQ')
@@ -107,11 +110,14 @@ def diary_sender1(message):
         cur_date = str(today)
         calc_difference(start_date, cur_date)
         num_days = calc_difference(start_date, cur_date)
-        print(str((calc_week(num_days))))
+        
         week = str((calc_week(num_days)))[1]
         day = str((calc_week(num_days)))[-2]
-        print('week - ', int(week))
-        print('day - ', int(day))
+        if int(week) > 4:
+            print('check')
+            week = str(int(week) % 4)
+        #print('week - ', int(week))
+        #print('day - ', int(day))
         if int(day) == 0:
             bot.reply_to(message, f"Броускі чіл сьогодні немає пар. Сьогодні - НЕДІЛЯ")
             bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAJ1mmWtD8YH3qUAAZxdAqBaj1X6Kf4SJgACCAADwDZPE29sJgveGptpNAQ')
@@ -150,8 +156,10 @@ def diary_sender2(message):
     start_date = '2024-01-22'
     cur_date = str(today)
     message_txt = ''
+    week = None  # Initialize week outside of the if conditions
+    day = None   # Initialize day outside of the if conditions
     print(cur_date)
-    print(convert_to_text_ukrainian(start_date, 1))
+
     if cur_date == '2024-01-21':
         print('hey')
         message_txt += ('Завтра - ПОНЕДІЛОК' + '\N{skull}.' + 'Буде такий розклад:')
@@ -159,32 +167,39 @@ def diary_sender2(message):
     else:
         calc_difference(start_date, cur_date)
         num_days = calc_difference(start_date, cur_date)
-        print(str((calc_week(num_days))))
+        # print(str((calc_week(num_days))))
         week = str((calc_week(num_days)))[1]
         day = str((calc_week(num_days)))[-2]
+        if int(week) > 4:
+            print('check')
+            week = str(int(week) % 4)
+            
         print('week - ', int(week))
         print('day - ', int(day))
-        if int(day) == 0:
-            print('Завтра понеділок')
-            message_txt += ('Завтра - ПОНЕДІЛОК' + ' ( ' + convert_to_text_ukrainian(cur_date, 1) + ').' + '\N{skull}'+  ' Буде такий розклад:')
-            if int(week) == 4:
-                message_txt += '\n' +stickers_data[1][1]
-            else:
 
-                message_txt += '\n' +stickers_data[int(week) + 1][1]
-        elif int(day) == 6:
-            message_txt += ('Броускі чіл завтра  немає пар. Завтра - НЕДІЛЯ ' + ' ( ' + convert_to_text_ukrainian(cur_date, 2) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
-            message_txt += '\n' + stickers_data[int(week) + 1][1]
-        elif int(day) == 5:
-            message_txt += ('Броускі чіл завтра  немає пар. Завтра - Субота ' + ' ( ' + convert_to_text_ukrainian(cur_date, 3) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
-            message_txt += '\n' + stickers_data[int(week) + 1][1]
+    if int(day) == 0:
+        print('Завтра понеділок')
+        message_txt += ('Завтра - ПОНЕДІЛОК' + ' ( ' + convert_to_text_ukrainian(cur_date, 1) + ').' + '\N{skull}'+  ' Буде такий розклад:')
+        if int(week) == 4:
+            message_txt += '\n' +stickers_data[1][1]
         else:
-            message_txt +=  'Завтра' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ')'  + ' буде такий розклад: '
-            message_txt += '\n' + stickers_data[int(week)][int(day) + 1]
+
+            message_txt += '\n' +stickers_data[int(week) + 1][1]
+    elif int(day) == 6:
+        message_txt += ('Броускі чіл завтра  немає пар. Завтра - НЕДІЛЯ ' + ' ( ' + convert_to_text_ukrainian(cur_date, 2) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
+        message_txt += '\n' + stickers_data[int(week) + 1][1]
+    elif int(day) == 5:
+        message_txt += ('Броускі чіл завтра  немає пар. Завтра - Субота ' + ' ( ' + convert_to_text_ukrainian(cur_date, 3) + ').' + '\N{Face with Cowboy Hat}.' + ' В понеділок розклад буде такий:')
+        message_txt += '\n' + stickers_data[int(week) + 1][1]
+    else:
+        message_txt +=  'Завтра' + ' ( ' + convert_to_text_ukrainian(start_date, 1) + ')'  + ' буде такий розклад: '
+        message_txt += '\n' + stickers_data[int(week)][int(day) + 1]
     response = message_txt + '\n\n' + '\N{watch}'
 
     output_pin = bot.send_message(message.chat.id, response)
     bot.pin_chat_message(chat_id=message.chat.id, message_id=output_pin.message_id)
+
+
 
 
 # 8.50 - 9.35, 9.35-9.40, 9.40-10.25, 10.25-10.35
@@ -279,6 +294,9 @@ def diary_sender5(message):
         print(str((calc_week(num_days))))
         week = str((calc_week(num_days)))[1]
         day = str((calc_week(num_days)))[-2]
+        if int(week) > 4:
+            print('check')
+            week = str(int(week) % 4)
         print('week - ', int(week))
         print('day - ', int(day))
         if int(day) == 0:
